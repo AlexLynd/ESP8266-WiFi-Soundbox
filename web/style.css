@@ -1,0 +1,34 @@
+* { font-family: 'Karla', sans-serif; }
+
+tbody tr:hover{
+  background-color: #eceff1 ;
+}
+
+tr:click{
+  background-color: black;
+}
+
+.player {
+  padding: 20px 0;
+}
+
+.player-nav {
+  bottom: 0;
+  position: fixed !important;
+  width: 100vw;
+  max-width: none !important;
+  padding: 10px;
+}
+
+.buttons a{
+  margin: 0 5px;
+}
+
+.active {
+    background-color: #b0bec5;
+}
+
+.tr {
+  /* border-radius: 3px;
+  border:  */
+}
