@@ -8,10 +8,6 @@ tr:click{
   background-color: black;
 }
 
-.player {
-  padding: 20px 0;
-}
-
 .player-nav {
   bottom: 0;
   position: fixed !important;
@@ -28,7 +24,11 @@ tr:click{
     background-color: #b0bec5;
 }
 
-.tr {
-  /* border-radius: 3px;
-  border:  */
+#playback, .range-field, .playback-form {
+  border: none !important;
+  margin: 0;
+}
+
+.thumb {
+  background-color: white;
 }
