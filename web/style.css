@@ -24,11 +24,11 @@ tr:click{
     background-color: #b0bec5;
 }
 
-#playback, .range-field, .playback-form {
+#playback {
   border: none !important;
-  margin: 0;
+  margin-bottom: 0;
 }
 
-.thumb {
-  background-color: white;
+.range-field, .playbackform {
+  margin: 0;
 }

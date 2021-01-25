@@ -1,7 +1,7 @@
 <html>
   <head>
     <link type="text/css" rel="stylesheet" href="materialize.min.css"  media="screen,projection"/>
-    
+
     <link type="text/css" rel="stylesheet" href="style.css"  media="screen,projection"/>
     <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
     <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
@@ -203,39 +203,34 @@
 
       </tbody>
     </table>
-    <p>Made be Alex and Eddie</p>
-    </div>
-    <div class="" style="height: 100px;">
+
+    <center><p>Made be <a href="http://alexlynd.com" target="_blank">Alex Lynd</a> and <a href="https://www.youtube.com/channel/UCh8PkBLmPQ7McdFxqxAwmPg" target="_blank">Eddie</a></p></center>
 
     </div>
-    <!-- <nav class="grey darken-4 player-nav"> -->
-    <div class="nav-wrapper container player-nav grey darken-4">
+    <div id="pad"></div>
 
+    <div class="container player-nav grey darken-4">
       <div class="center buttons">
-
-       
-        
-        
         <a class="btn-floating btn-medium waves-effect waves-dark white" style="margin-right: 2rem;"><i class="material-icons" style="color: black" >shuffle</i></a>
         <a class="btn-floating btn-medium waves-effect waves-dark white"><i class="material-icons" style="color: black">fast_rewind</i></a>
         <a class="btn-floating btn-large waves-effect waves-dark white"><i class="material-icons" style="color: black">play_arrow</i></a>
         <a class="btn-floating btn-medium waves-effect waves-dark white"><i class="material-icons" style="color: black">fast_forward</i></a>
         <a class="btn-floating btn-medium waves-effect waves-dark white" style="margin-left: 2rem;"><i class="material-icons" style="color: black">loop</i></a>
-
         <div class="container">
           <form action="#" class="playbackform"></form>
-            <p class="range-field">
+            <p class="range-field" style="z-index: 100;">
               <input type="range" id="playback" min="0" max="100" />
             </p>
           </form>
-          </div>
+        </div>
       </div>
-
-
     </div>
-   <!-- </nav> -->
+
+    <script>
+      document.getElementById("pad").style.height = document.getElementsByClassName('player-nav')[0].clientHeight;
+    </script>
+
     <script type="text/javascript" src="materialize.min.js"></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/materialize/1.0.0/js/materialize.min.js"></script>
-            
+
   </body>
 </html>
