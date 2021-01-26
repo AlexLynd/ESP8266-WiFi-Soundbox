@@ -32,3 +32,8 @@ tr:click{
 .range-field, .playbackform {
   margin: 0;
 }
+
+.range-field {
+  max-width: 700px;
+  margin: auto
+}
