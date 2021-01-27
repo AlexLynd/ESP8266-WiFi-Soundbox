@@ -44,7 +44,7 @@ void handleStatus() {
 
 void extraHandlers() {
   server.on("/", handleStatus);
-  server.on("/player","player.html");
+//  server.on("/player","player.html");
 }
 
 void loop()

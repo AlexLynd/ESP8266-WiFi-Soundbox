@@ -24,12 +24,12 @@ tr:click{
     background-color: #b0bec5;
 }
 
-#playback {
+#volume {
   border: none !important;
   margin-bottom: 0;
 }
 
-.range-field, .playbackform {
+.range-field, .volume-slider {
   margin: 0;
 }
 
@@ -37,3 +37,4 @@ tr:click{
   max-width: 700px;
   margin: auto
 }
+
