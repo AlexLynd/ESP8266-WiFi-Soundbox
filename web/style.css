@@ -16,7 +16,7 @@ tr:click{
   padding: 10px;
 }
 
-.buttons a{
+.buttons button {
   margin: 0 5px;
 }
 
@@ -37,4 +37,3 @@ tr:click{
   max-width: 700px;
   margin: auto
 }
-
