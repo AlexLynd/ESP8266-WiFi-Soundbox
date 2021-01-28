@@ -1,6 +1,6 @@
 <html>
   <head>
-    <meta charset="UTF-8"> 
+    <meta charset="UTF-8">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/materialize/1.0.0/css/materialize.min.css">
 
     <link type="text/css" rel="stylesheet" href="style.css"  media="screen,projection"/>
@@ -36,7 +36,7 @@
 
     <div class="container player-nav grey darken-4">
       <div class="center buttons">
-        <form action="/dfplayer" method="post" onsubmit="test(); return false">
+        <form action="/dfplayer" method="post" onsubmit="return false">
           <button class="btn-floating btn-medium waves-effect waves-dark white" style="margin-right: 2rem;"><i class="material-icons" style="color: black" >shuffle</i></button>
           <button class="btn-floating btn-medium waves-effect waves-dark white" name ="cmd" type="submit" value=""><i class="material-icons" style="color: black">fast_rewind</i></button>
           <button class="btn-floating btn-large waves-effect waves-dark white" name ="cmd" type="submit" value="pause" onclick="updatePlayback()" id="playback"><i class="material-icons" style="color: black">play_arrow</i></button>
@@ -44,13 +44,13 @@
           <button class="btn-floating btn-medium waves-effect waves-dark white" style="margin-left: 2rem;"><i class="material-icons" style="color: black">loop</i></button>
         </form>
         <div class="container">
-          <form action="#" class="volume-slider" onsubmit="test();"></form>
-            <p class="range-field" style="z-index: 100;">
+          <form action="#" class="volume-slider"></form>
+            <p class="range-field" style="z-index: 100;" onmouseup="test();">
               <input type="range" id="volume" min="0" max="30" />
             </p>
           </form>
         </div>
-        
+
       </div>
     </div>
 
@@ -65,13 +65,13 @@
                     test = allText.split("\n").filter(item => item);
                     for (i=0; i<test.length; i++) {
                       let file = document.createElement("tr");
-                      let att =  document.createAttribute("onload"); 
+                      let att =  document.createAttribute("onload");
                       att.value="javascript: test()"
                       file.setAttributeNode(att);
                       file.innerHTML= "<td>"+test[i].split("-")[1]+"</td><td>"+test[i].split("-")[0]+"</td>";
                       document.getElementById("table").appendChild(file);
                     }
-                    
+
                 }
             }
         }
@@ -91,15 +91,16 @@
           document.getElementById("playback").firstChild.innerHTML = "play_arrow";
         }
         console.log(document.getElementById("playback").getAttribute("value"));
-
       }
 
       function test() {
           var http = new XMLHttpRequest();
           http.open("POST", "/dfPlayer", true);
           http.setRequestHeader("Content-type","application/x-www-form-urlencoded");
-          var params = "cmd="+document.getElementById("playback").getAttribute("value")+"&p1=1&p2=1"; 
+          var params = "cmd="+document.getElementById("playback").getAttribute("value")+"&p1=1&p2=1";
           http.send(params);
+
+            console.log(document.getElementsByClassName("value")[0].innerHTML);
       }
 
     </script>
