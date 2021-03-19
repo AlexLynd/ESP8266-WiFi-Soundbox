@@ -45,7 +45,7 @@
         </form>
         <div class="container">
           <form action="#" class="volume-slider"></form>
-            <p class="range-field" style="z-index: 100;" onmouseup="run( &quot;volume&quot;,0);">
+            <p class="range-field" style="z-index: 100;" oninput="run( &quot;volume&quot;,0);">
               <input type="range" id="volume" min="0" max="30" />
             </p>
           </form>
@@ -79,7 +79,7 @@
             }
         }
         rawFile.send(null);
-        document.getElementById(1).classList.add("active");
+        // document.getElementById(1).classList.add("active");
     }
 
 
@@ -102,21 +102,33 @@
       function run(cmd,idnum) {
           
           if (cmd == "play") {
-            var active = document.getElementsByClassName("active")[0];
-            active.classList.remove("active");
+            try {
+              var active = document.getElementsByClassName("active")[0];
+              active.classList.remove("active");
+              console.log("add active");
+            }
+            catch {
+              console.log("caught");
+            }
+            console.log("here");
             document.getElementById(idnum).classList.add("active"); // toggle active handoff
             document.getElementById("playback").setAttribute("value", "play");
             document.getElementById("playback").firstChild.innerHTML = "pause";
+            var playtoggle = document.getElementById("playback");
+            
           }
           if (cmd == "volume") {
-            // console.log(idnum);
             var p1val = document.getElementsByClassName("value")[0].innerHTML;
           }
           else {
             p1val = 1;
           }
+          // if ( cmd== "previous" || cmd == "next") {
+          //   console.log()
+          // }
+          console.log("escape");
           var http = new XMLHttpRequest();
-          http.open("POST", "http://192.168.1.21/dfPlayer", true);
+          http.open("POST", "http://192.168.1.61/dfPlayer", true);
           http.setRequestHeader("Content-type","application/x-www-form-urlencoded");
           var params = "cmd="+cmd+"&p1="+p1val+"&p2="+idnum;
           console.log(params);
