@@ -1,14 +1,16 @@
 # WiFu
+WiFi controlled audio player / sound box based off the ESP8266, with a custom web interface self-hosted on the microcontroller.
 
-## What the hell is this?
-My friend commissioned me to make a voice box for his cardboard waifu cutout. 
+## Why the hell is this project named WiFu?
+My friend commissioned me to make a him a WiFi controllable voice box for his... (very cursed) cardboard waifu cutout. 
 
-## What does it do?
-This is an open-source, Wi-Fi controlled audio player that uses the ESP8266, interfacing with a custom webapp that allows you to play audio clips from an SD card.
+## About
+This is an open-source, Wi-Fi controlled audio player using the ESP8266 WiFi microcontroller.  It can play music and audio files through a Spotify-esque web interface I developed using Bootstrap and pure JS.  
+The hardware design utilizes the DFPlayer sound module to load MP3 files from an SD card, which can be accessed and played seamlessly over WiFi.
 
 ## Features
 <p align="center">
-  <img alt="WiFu web audio player features" src="/img/WiFu-components.png" width="500">
+  <img alt="WiFu web audio player features" src="/img/WiFu-components.png">
   <br>
   <b>Some features in the first prototype of WiFu</b>
   <br>
