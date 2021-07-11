@@ -7,12 +7,12 @@
 /*
 Wifi Manager Web set up
 */
-#define WM_NAME "dfPlayer"
+#define WM_NAME "WiFu"
 #define WM_PASSWORD "password"
 
 //Update service set up
-String host = "Pythagoras";
-const char* update_password = "kktsbp1234";
+String host = "Bingus";
+const char* update_password = "handsomebingus";
 
 //define actions during setup
 //define any call at start of set up

@@ -1,27 +1,29 @@
 <html>
-  <head>
-    <meta charset="UTF-8">
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/materialize/1.0.0/css/materialize.min.css">
 
-    <link type="text/css" rel="stylesheet" href="style.css"  media="screen,projection"/>
-    <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-    <link rel="preconnect" href="https://fonts.gstatic.com">
-<link href="https://fonts.googleapis.com/css2?family=Karla:wght@300&display=swap" rel="stylesheet">
-  </head>
-  <body onload= "javascript: loadFiles();">
-    <div class="container player">
-      <div style="margin:20px 0; float: right">
+<head>
+  <meta charset="UTF-8">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/materialize/1.0.0/css/materialize.min.css">
+
+  <link type="text/css" rel="stylesheet" href="style.css" media="screen,projection" />
+  <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <link rel="preconnect" href="https://fonts.gstatic.com">
+  <link href="https://fonts.googleapis.com/css2?family=Karla:wght@300&display=swap" rel="stylesheet">
+</head>
+
+<body onload="javascript: loadFiles();">
+  <div class="container player">
+    <div style="margin:20px 0; float: right">
       <a class="waves-effect waves-light btn blue-grey"><i class="material-icons left">battery_std</i>100%</a>
-      </div>
-      <div style="margin:20px 0; float: left">
+    </div>
+    <div style="margin:20px 0; float: left">
       <a class="waves-effect waves-light btn blue-grey" href="/edit">Edit MP3 List</a>
-      </div>
+    </div>
     <table>
       <thead>
         <tr>
-            <th>File</th>
-            <th>Number</th>
+          <th>File</th>
+          <th>Number</th>
         </tr>
       </thead>
 
@@ -29,115 +31,166 @@
       </tbody>
     </table>
 
-    <center><p>Made by <a href="http://alexlynd.com" target="_blank">Alex Lynd</a> and <a href="https://www.youtube.com/channel/UCh8PkBLmPQ7McdFxqxAwmPg" target="_blank">Eddie</a></p></center>
+    <center>
+      <p>Made by <a href="http://alexlynd.com" target="_blank">Alex Lynd</a> and <a
+          href="https://www.youtube.com/channel/UCh8PkBLmPQ7McdFxqxAwmPg" target="_blank">Eddie</a></p>
+    </center>
 
-    </div>
-    <div id="pad"></div>
+  </div>
+  <div id="pad"></div>
 
-    <div class="container player-nav grey darken-4">
-      <div class="center buttons">
-        <form action="/dfplayer" method="post" onsubmit="return false">
-          <button class="btn-floating btn-medium waves-effect waves-dark white" style="margin-right: 2rem;"><i class="material-icons" style="color: black" >shuffle</i></button>
-          <button class="btn-floating btn-medium waves-effect waves-dark white" value="next" onclick="run(value,0);"><i class="material-icons" style="color: black">fast_rewind</i></button>
-          <button class="btn-floating btn-large waves-effect waves-dark white" name ="cmd" type="submit" value="pause" onclick="updatePlayback()" id="playback"><i class="material-icons" style="color: black" >play_arrow</i></button>
-          <button class="btn-floating btn-medium waves-effect waves-dark white" value="previous" onclick="run(value,0);" ><i class="material-icons" style="color: black">fast_forward</i></button>
-          <button class="btn-floating btn-medium waves-effect waves-dark white" style="margin-left: 2rem;"><i class="material-icons" style="color: black">loop</i></button>
+  <div class="container player-nav grey darken-4">
+    <div class="center buttons">
+      <form action="/dfplayer" method="post" onsubmit="return false">
+        <button class="btn-floating btn-medium waves-effect waves-dark white" style="margin-right: 2rem;"><i
+            class="material-icons" style="color: black">shuffle</i></button>
+        <button class="btn-floating btn-medium waves-effect waves-dark white" value="next" onclick="run(value,0);"><i
+            class="material-icons" style="color: black">fast_rewind</i></button>
+        <button class="btn-floating btn-large waves-effect waves-dark white" name="cmd" type="submit" value="pause"
+          onclick="updatePlayback()" id="playback"><i class="material-icons"
+            style="color: black">play_arrow</i></button>
+        <button class="btn-floating btn-medium waves-effect waves-dark white" value="previous"
+          onclick="run(value,0);"><i class="material-icons" style="color: black">fast_forward</i></button>
+        <button class="btn-floating btn-medium waves-effect waves-dark white" style="margin-left: 2rem;"><i
+            class="material-icons" style="color: black">loop</i></button>
+      </form>
+      <div class="container">
+        <form action="#" class="volume-slider"></form>
+        <p class="range-field" style="z-index: 100;" oninput="run( &quot;volume&quot;,0);">
+          <input type="range" id="volume" min="0" max="30" />
+        </p>
         </form>
-        <div class="container">
-          <form action="#" class="volume-slider"></form>
-            <p class="range-field" style="z-index: 100;" oninput="run( &quot;volume&quot;,0);">
-              <input type="range" id="volume" min="0" max="30" />
-            </p>
-          </form>
-        </div>
-
       </div>
     </div>
+  </div>
 
-    <script>
+  <script>
+    var firstIteration = true;
+    var textLength;
     function loadFiles() {
-        var rawFile = new XMLHttpRequest();
-        let fileNoCache = "mp3.txt?rand="+Math.random().toString(36).substring(7);
-        rawFile.open("GET", fileNoCache, false);
-        rawFile.onreadystatechange = function () {
-            if(rawFile.readyState === 4) {
-                if(rawFile.status === 200 || rawFile.status == 0) {
-                    var allText = rawFile.responseText;
-                    test = allText.split("\n").filter(item => item);
-                    for (i=0; i<test.length; i++) {
-                      let file = document.createElement("tr");
-                      let att =  document.createAttribute("onclick");
-                      att.value="javascript: run("+"\"play\","+(i+1)+");";
-                      file.setAttributeNode(att);
-                      let idval =  document.createAttribute("id");
-                      idval.value=i+1;
-                      file.setAttributeNode(idval);
-                      file.innerHTML= "<td>"+test[i].split("-")[1]+"</td><td>"+test[i].split("-")[0]+"</td>";
-                      document.getElementById("table").appendChild(file);
-                    }
-                }
+      var rawFile = new XMLHttpRequest();
+      let fileNoCache = "mp3.txt?rand=" + Math.random().toString(36).substring(7);
+      rawFile.open("GET", fileNoCache, false);
+      rawFile.onreadystatechange = function () {
+        if (rawFile.readyState === 4) {
+          if (rawFile.status === 200 || rawFile.status == 0) {
+            var allText = rawFile.responseText;
+            test = allText.split("\n").filter(item => item);
+            textLength = test.length;
+            for (i = 0; i < test.length; i++) {
+              let file = document.createElement("tr");
+              let att = document.createAttribute("onclick");
+              att.value = "javascript: run(" + "\"play\"," + (i + 1) + ");";
+              file.setAttributeNode(att);
+              let idval = document.createAttribute("id");
+              idval.value = i + 1;
+              file.setAttributeNode(idval);
+              file.innerHTML = "<td>" + test[i].split("-")[1] + "</td><td>" + test[i].split("-")[0] + "</td>";
+              document.getElementById("table").appendChild(file);
             }
+          }
         }
-        rawFile.send(null);
-        // document.getElementById(1).classList.add("active");
+      }
+      rawFile.send(null);
+      // document.getElementById(1).classList.add("active");
+
     }
 
+    document.getElementById("pad").style.height = document.getElementsByClassName('player-nav')[0].clientHeight;
 
-      document.getElementById("pad").style.height = document.getElementsByClassName('player-nav')[0].clientHeight;
+    function updatePlayback() {
+      var playtoggle = document.getElementById("playback");
+      if (playtoggle.getAttribute("value") == "pause") {
+        playtoggle.setAttribute("value", "start");
+        playtoggle.firstChild.innerHTML = "pause";
+      }
+      else {
+        playtoggle.setAttribute("value", "pause");
+        playtoggle.firstChild.innerHTML = "play_arrow";
+      }
+      run(playtoggle.getAttribute("value"), 0);
+    }
 
-      function updatePlayback() {
+    function run(cmd, idnum) {
+      // var host = window.location.hostname;
+      var host = "192.168.43.147";
+
+      if (cmd == "volume" && firstIteration) {
+        console.log("first volume");
+        var p1val = 15;
+      }
+      else if (cmd == "volume") {
+        console.log("alt volume");
+        var p1val = document.getElementsByClassName("value")[0].innerHTML;
+      }
+
+      else {
+        p1val = 1;
+      }
+      if (firstIteration && (cmd == "previous" || cmd == "next" || cmd == "start")) {
+        run("stop", 1); firstIteration = true;
+        run("volume", 0);
+        cmd = "play"; idnum = 1;
+      }
+
+      if (cmd == "play") {
+        try {
+          var active = document.getElementsByClassName("active")[0];
+          active.classList.remove("active");
+        }
+        catch {
+          // console.log("caught");
+        }
+        document.getElementById(idnum).classList.add("active"); // toggle active handoff
+        document.getElementById("playback").setAttribute("value", "play");
+        document.getElementById("playback").firstChild.innerHTML = "pause";
         var playtoggle = document.getElementById("playback");
-        if (playtoggle.getAttribute("value")== "pause") {
-          playtoggle.setAttribute("value", "start");
-          playtoggle.firstChild.innerHTML = "pause";
+      }
+      else if (cmd == "previous" || cmd == "next") {
+        var current_id = document.getElementsByClassName("active")[0].id;
+        var next;
+        if (cmd=="previous"){
+          next = parseInt(current_id)+1;
+          if (current_id==textLength) {
+            
+            return;
+
+          }
         }
         else {
-          playtoggle.setAttribute("value","pause");
-          playtoggle.firstChild.innerHTML = "play_arrow";
+          next = parseInt(current_id)-1;
+          if (current_id==1) {
+
+            return;
+          }
         }
-        console.log(playtoggle.getAttribute("value"));
-        run(playtoggle.getAttribute("value"),0);
+
+        try {
+          var active = document.getElementsByClassName("active")[0];
+          active.classList.remove("active");
+        }
+        catch {
+          //
+        }
+        // console.log(document.getElementsByClassName("active")[0].id);
+        
+        document.getElementById(next).classList.add("active");
+
       }
 
-      function run(cmd,idnum) {
-          
-          if (cmd == "play") {
-            try {
-              var active = document.getElementsByClassName("active")[0];
-              active.classList.remove("active");
-              console.log("add active");
-            }
-            catch {
-              console.log("caught");
-            }
-            console.log("here");
-            document.getElementById(idnum).classList.add("active"); // toggle active handoff
-            document.getElementById("playback").setAttribute("value", "play");
-            document.getElementById("playback").firstChild.innerHTML = "pause";
-            var playtoggle = document.getElementById("playback");
-            
-          }
-          if (cmd == "volume") {
-            var p1val = document.getElementsByClassName("value")[0].innerHTML;
-          }
-          else {
-            p1val = 1;
-          }
-          // if ( cmd== "previous" || cmd == "next") {
-          //   console.log()
-          // }
-          console.log("escape");
-          var http = new XMLHttpRequest();
-          http.open("POST", "http://192.168.1.28/dfPlayer", true);
-          http.setRequestHeader("Content-type","application/x-www-form-urlencoded");
-          var params = "cmd="+cmd+"&p1="+p1val+"&p2="+idnum;
-          console.log(params);
-          http.send(params);
-          console.log(document.getElementsByClassName("value")[0].innerHTML);
-      }
+      firstIteration = false;
+      var http = new XMLHttpRequest();
+      http.open("POST", "http://" + host + "/dfPlayer", true);
+      http.setRequestHeader("Content-type", "application/x-www-form-urlencoded");
+      var params = "cmd=" + cmd + "&p1=" + p1val + "&p2=" + idnum;
+      console.log(params);
+      http.send(params);
+      // console.log(document.getElementsByClassName("value")[0].innerHTML);
+    }
 
-    </script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/materialize/1.0.0/js/materialize.min.js"></script>
+  </script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/materialize/1.0.0/js/materialize.min.js"></script>
 
-  </body>
+</body>
+
 </html>

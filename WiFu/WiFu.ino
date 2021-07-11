@@ -1,120 +1,172 @@
 #define ESP8266
-//#include "Arduino.h"
+#include "BaseConfig.h"
 #include "SoftwareSerial.h"
 #include "DFRobotDFPlayerMini.h"
-#include "BaseConfig.h"
 
-SoftwareSerial mySoftwareSerial(5, 13);
+int adc;
+String response;
+int timeInterval = 25;
+unsigned long elapsedTime;
+
+SoftwareSerial mySoftwareSerial(5, 13); // RX, TX
 DFRobotDFPlayerMini myDFPlayer;
-void printDetail(uint8_t type, int value);
+#define INIT_SKIP -1
+#define INIT_START 0
+#define INIT_DELAY 1
+#define INIT_OK1 2
+#define INIT_OK2 3
+#define INIT_RUN 4
 
-void setupEnd()
-{
-  pinMode(13,OUTPUT);
-  pinMode(5,INPUT);
-  mySoftwareSerial.begin(9600);
+int dfPlayerInit = INIT_START;
+int dfPlayerType;
+int dfPlayerParameter;
 
-  Serial.println();
-  Serial.println(F("DFRobot DFPlayer Mini Demo"));
-  Serial.println(F("Initializing DFPlayer ... (May take 3~5 seconds)"));
+int muteState;
+//delay initalising dfPlayer module after power on (mSec)
+#define DFPLAYER_STARTUP 4000
+#define VOLUP 0
+#define VOLDOWN 1
+#define SELECT1 2
+#define SELECT2 3
+#define MUTE 16
+#define LONG_PRESS 1000
+
+int folderSelect = 1;
+int fileSelect = 1;
+int volume = 15;
+String cmd;
+unsigned long resetPeriod;
+
+float bat_volts;
+int   bat_percent;
+
+void init_dfPlayer() {
+	Serial.println();
+	Serial.println(F("Initializing DFPlayer ... (May take 2 seconds)"));
   
-  if (!myDFPlayer.begin(mySoftwareSerial)) {  //Use softwareSerial to communicate with mp3.
-    Serial.println(F("Unable to begin:"));
-    Serial.println(F("1.Please recheck the connection!"));
-    Serial.println(F("2.Please insert the SD card!"));
-    while(!myDFPlayer.begin(mySoftwareSerial)){
-      delay(0); // Code to compatible with ESP8266 watch dog.
-    }
-  }
-  Serial.println(F("DFPlayer Mini online."));
-  
-//  myDFPlayer.volume(30);  //Set volume value. From 0 to 30
-//  myDFPlayer.play(1);  //Play the first mp3
-  Serial.println(myDFPlayer.readFileCounts());
+	//Use softwareSerial to communicate with mp3.
+	//Extend timeout for getting reset message back (typically takes 1 second)	
+	myDFPlayer.setTimeOut(DFMSG_TIMEOUT);
+	resetPeriod = millis();
+	if (myDFPlayer.begin(mySoftwareSerial)) {
+		dfPlayerInit = INIT_OK1;
+		Serial.print(F("DFPlayer Mini online."));
+   
+	} else {
+		dfPlayerInit = INIT_OK2;
+		Serial.print(F("DFPlayer Mini offline."));
+	}
+	resetPeriod = millis() - resetPeriod;
+	Serial.println(" Reset period:" + String(resetPeriod));
+}
+
+void dfPlayerSetVolume(int vol) {
+	if(vol > 30) vol = 30;
+	if(vol < 0) vol = 0;
+	if(vol != volume) {
+		volume = vol;
+		myDFPlayer.volume(volume);
+	}
+}
+
+void dfPlayerCmd() {
+	cmd = server.arg("cmd");
+	int p1 = server.arg("p1").toInt();
+	int p2 = server.arg("p2").toInt();
+	int p3 = server.arg("p3").toInt();
+	server.send(200, "text/html", F("dfPlayer cmd being processed"));
+	Serial.print(cmd);Serial.printf(" p1=%d p2=%d\r\n",p1,p2);
+	
+	if(dfPlayerInit != INIT_RUN  && dfPlayerInit >= INIT_OK1) {
+		myDFPlayer.volume(volume);
+		dfPlayerInit = INIT_RUN;
+		delaymSec(500);
+	}
+
+	if(cmd.equalsIgnoreCase("play")) {
+			myDFPlayer.playFolder(folderSelect, p2);
+	} else if(cmd.equalsIgnoreCase("playmp3")) {
+		myDFPlayer.playMp3Folder(p1);
+	} else if(cmd.equalsIgnoreCase("volume")) {
+		dfPlayerSetVolume(p1);
+	} else if(cmd.equalsIgnoreCase("stop")) {
+		myDFPlayer.stop();
+	} else if(cmd.equalsIgnoreCase("volumeup")) {
+		dfPlayerSetVolume(volume+1);
+	} else if(cmd.equalsIgnoreCase("volumedown")) {
+		dfPlayerSetVolume(volume-1);
+	} else if(cmd.equalsIgnoreCase("speaker")) {
+		p1 = p1 ? 0 : 1;
+		digitalWrite(MUTE, p1);
+		muteState = p1;
+	} else if(cmd.equalsIgnoreCase("pause")) {
+		myDFPlayer.pause();
+	} else if(cmd.equalsIgnoreCase("start")) {
+		myDFPlayer.start();
+   Serial.println("here");
+	} else if(cmd.equalsIgnoreCase("next")) {
+		myDFPlayer.next();
+	} else if(cmd.equalsIgnoreCase("previous")) {
+		myDFPlayer.previous();
+	} else if(cmd.equalsIgnoreCase("mode")) {
+		myDFPlayer.loop(p1);
+	} else if(cmd.equalsIgnoreCase("loopFolder")) {
+			myDFPlayer.loopFolder(folderSelect);
+	} else if(cmd.equalsIgnoreCase("random")) {
+		myDFPlayer.randomAll();
+	} else if(cmd.equalsIgnoreCase("eq")) {
+		myDFPlayer.EQ(p1);
+	} else if(cmd.equalsIgnoreCase("device")) {
+		myDFPlayer.outputDevice(p1);
+	} else if(cmd.equalsIgnoreCase("setting")) {
+		myDFPlayer.outputSetting(p1,p2);
+	} else if(cmd.equalsIgnoreCase("sleep")) {
+		myDFPlayer.sleep();
+	} else if(cmd.equalsIgnoreCase("reset")) {
+		myDFPlayer.reset();
+	} else if(cmd.equalsIgnoreCase("init")) {
+		init_dfPlayer();
+	}
+}
+
+void getBattery() {
+  adc = analogRead(A0);
+	bat_volts   = ((adc*3.3)/1024)*2*1.125;
+  bat_percent = (bat_volts/6)*100;
+	response = "{\"voltage\":" + ((String) bat_volts) + ", \"battery\":"+ bat_percent +"}";
+	server.send(200, "application/json", response);
+}
+
+bool dfPlayerFinished() {
+	myDFPlayer.available();
+	return (myDFPlayer._handleCommand == 61);
 }
 
 void setupStart() {
-  
-}
-
-void handleStatus() {
-  String status = "penis";
-  server.send(200, "text/html", status);
+  Serial.begin(115200);
+  pinMode(13,OUTPUT);
+  pinMode(5,INPUT);
 }
 
 void extraHandlers() {
-  server.on("/", handleStatus);
-//  server.on("/player","player.html");
+	server.on("/dfPlayer", dfPlayerCmd);
+	server.on("/battery", getBattery);
+}
+
+void setupEnd() {
+	delaymSec(500);
+	mySoftwareSerial.begin(9600);
 }
 
 void loop() {
-  static unsigned long timer = millis();
-  
-  if (millis() - timer > 10000) {
-    timer = millis();
-    myDFPlayer.next();  //Play next mp3 every 3 second.
-  }
-  
-  if (myDFPlayer.available()) {
-    printDetail(myDFPlayer.readType(), myDFPlayer.read()); //Print the detail message from DFPlayer to handle different errors and states.
-  }
-  server.handleClient();
-  wifiConnect(1);
-  delaymSec(10);
-}
-
-void printDetail(uint8_t type, int value){
-  switch (type) {
-    case TimeOut:
-      Serial.println(F("Time Out!"));
-      break;
-    case WrongStack:
-      Serial.println(F("Stack Wrong!"));
-      break;
-    case DFPlayerCardInserted:
-      Serial.println(F("Card Inserted!"));
-      break;
-    case DFPlayerCardRemoved:
-      Serial.println(F("Card Removed!"));
-      break;
-    case DFPlayerCardOnline:
-      Serial.println(F("Card Online!"));
-      break;
-    case DFPlayerPlayFinished:
-      Serial.print(F("Number:"));
-      Serial.print(value);
-      Serial.println(F(" Play Finished!"));
-      break;
-    case DFPlayerError:
-      Serial.print(F("DFPlayerError:"));
-      switch (value) {
-        case Busy:
-          Serial.println(F("Card not found"));
-          break;
-        case Sleeping:
-          Serial.println(F("Sleeping"));
-          break;
-        case SerialWrongStack:
-          Serial.println(F("Get Wrong Stack"));
-          break;
-        case CheckSumNotMatch:
-          Serial.println(F("Check Sum Not Match"));
-          break;
-        case FileIndexOut:
-          Serial.println(F("File Index Out of Bound"));
-          break;
-        case FileMismatch:
-          Serial.println(F("Cannot Find File"));
-          break;
-        case Advertise:
-          Serial.println(F("In Advertise"));
-          break;
-        default:
-          break;
-      }
-      break;
-    default:
-      break;
-  }
-
+	server.handleClient();
+	wifiConnect(1);
+	delaymSec(timeInterval);
+	elapsedTime++;
+	if(dfPlayerInit == INIT_START && elapsedTime * timeInterval > DFPLAYER_STARTUP) {
+		Serial.println(F("Delayed init of dfPlayer"));
+		dfPlayerInit = INIT_DELAY;
+		init_dfPlayer();
+		digitalWrite(MUTE, 0);
+	}
 }
