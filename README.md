@@ -15,7 +15,7 @@ The hardware design utilizes the DFPlayer sound module to load MP3 files from an
   <b>Some features in the first prototype of WiFu</b>
   <br>
   <br>
-  <img alt="WiFu web audio player features" src="/img/components.png">
+  <img alt="WiFu web audio player features" src="/img/components.jpg">
   <br>
   <b>Components used</b>
   <br>
